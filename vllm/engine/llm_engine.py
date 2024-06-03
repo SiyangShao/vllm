@@ -231,6 +231,9 @@ class LLMEngine:
             load_config=load_config,
         )
 
+        if self.load_config.load_only:
+            self.model_executor.save_model()
+
         if not self.model_config.embedding_mode:
             self._initialize_kv_caches()
 

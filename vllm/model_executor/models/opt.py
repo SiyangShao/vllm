@@ -356,3 +356,6 @@ class OPTForCausalLM(nn.Module):
                 weight_loader = getattr(param, "weight_loader",
                                         default_weight_loader)
                 weight_loader(param, loaded_weight)
+    
+    def can_generate(self) -> bool:
+        return False

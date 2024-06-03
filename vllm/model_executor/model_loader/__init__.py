@@ -10,6 +10,7 @@ from vllm.model_executor.model_loader.loader import (BaseModelLoader,
 from vllm.model_executor.model_loader.utils import (
     get_architecture_class_name, get_model_architecture)
 
+from checkpoint_store import load_model
 
 def get_model(*, model_config: ModelConfig, load_config: LoadConfig,
               device_config: DeviceConfig, parallel_config: ParallelConfig,
@@ -17,6 +18,9 @@ def get_model(*, model_config: ModelConfig, load_config: LoadConfig,
               lora_config: Optional[LoRAConfig],
               vision_language_config: Optional[VisionLanguageConfig],
               cache_config: CacheConfig) -> nn.Module:
+    if load_config.use_checkpoint:
+        return load_model(model_config.model,storage_path=load_config.checkpoint_dir)
+
     loader = get_model_loader(load_config)
     return loader.load_model(model_config=model_config,
                              device_config=device_config,

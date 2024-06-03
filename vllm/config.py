@@ -510,6 +510,9 @@ class LoadConfig:
 
     load_format: Union[str, LoadFormat, "BaseModelLoader"] = LoadFormat.AUTO
     download_dir: Optional[str] = None
+    checkpoint_dir: Optional[str] = None
+    use_checkpoint: bool = False
+    load_only: bool = False
     model_loader_extra_config: Optional[Union[str, dict]] = field(
         default_factory=dict)
 

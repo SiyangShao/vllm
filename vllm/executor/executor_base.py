@@ -73,6 +73,13 @@ class ExecutorBase(ABC):
             execute_model_req: ExecuteModelRequest) -> List[SamplerOutput]:
         """Executes at least one model step on the given sequences."""
         raise NotImplementedError
+    
+    @abstractmethod
+    def save_model(
+        self
+    )->None:
+        """save model"""
+        raise NotImplementedError
 
     def stop_remote_worker_execution_loop(self) -> None:
         """Releases parallel workers from model loop."""

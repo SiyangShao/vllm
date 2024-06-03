@@ -24,6 +24,8 @@ from vllm.sequence import (MultiModalData, SamplerOutput, SequenceData,
 from vllm.utils import (CudaMemoryProfiler, get_kv_cache_torch_dtype, is_hip,
                         is_pin_memory_available, make_tensor_with_pad)
 
+from checkpoint_store import save_model
+
 logger = init_logger(__name__)
 
 _PAD_SLOT_ID = -1
@@ -194,6 +196,10 @@ class ModelRunner:
                     "Using FP8 KV cache but no scaling factors "
                     "provided. Defaulting to scaling factors of 1.0. "
                     "This may lead to less accurate results!")
+
+    def save_model(self) -> None:
+        logger.info(f"Calling checkpoint-store to save model in {self.load_config.checkpoint_dir}")
+        save_model(self.model, self.load_config.checkpoint_dir)
 
     def save_sharded_state(
         self,

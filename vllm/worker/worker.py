@@ -119,6 +119,9 @@ class Worker(WorkerBase):
 
     def load_model(self):
         self.model_runner.load_model()
+    
+    def save_model(self):
+        self.model_runner.save_model()
 
     def save_sharded_state(
         self,

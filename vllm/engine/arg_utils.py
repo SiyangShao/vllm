@@ -28,6 +28,9 @@ class EngineArgs:
     tokenizer_mode: str = 'auto'
     trust_remote_code: bool = False
     download_dir: Optional[str] = None
+    checkpoint_dir: Optional[str] = None
+    use_checkpoint: bool = False
+    load_only: bool = False
     load_format: str = 'auto'
     dtype: str = 'auto'
     kv_cache_dtype: str = 'auto'
@@ -625,6 +628,9 @@ class EngineArgs:
         load_config = LoadConfig(
             load_format=self.load_format,
             download_dir=self.download_dir,
+            checkpoint_dir=self.checkpoint_dir,
+            use_checkpoint=self.use_checkpoint,
+            load_only=self.load_only,
             model_loader_extra_config=self.model_loader_extra_config,
         )
 
