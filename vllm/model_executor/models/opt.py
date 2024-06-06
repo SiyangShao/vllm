@@ -21,7 +21,7 @@ from typing import Iterable, List, Optional, Tuple
 
 import torch
 from torch import nn
-from transformers import OPTConfig
+from transformers import OPTConfig, PreTrainedModel
 
 from vllm.attention import Attention, AttentionMetadata
 from vllm.config import CacheConfig
