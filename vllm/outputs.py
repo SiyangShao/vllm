@@ -6,7 +6,7 @@ from typing import Union
 
 from vllm.lora.request import LoRARequest
 from vllm.sampling_params import RequestOutputKind
-from vllm.sequence import (PromptLogprobs, RequestMetrics, SampleLogprobs,
+from vllm.sequence import (PromptLogprobs, RequestMetaMetrics, RequestMetrics, SampleLogprobs,
                            SequenceGroup, SequenceGroupBase, SequenceStatus)
 
 
@@ -115,6 +115,15 @@ class RequestOutput:
         self.encoder_prompt = encoder_prompt
         self.encoder_prompt_token_ids = encoder_prompt_token_ids
         self.num_cached_tokens = num_cached_tokens
+    
+    def get_metrics(self) -> RequestMetaMetrics:
+        metrics = RequestMetaMetrics(
+            request_id = self.request_id,
+            prompt_len = len(self.prompt_token_ids) if self.prompt_token_ids else 0,
+            output_len = len(self.outputs[0].token_ids) if self.outputs else 0,
+            metrics = self.metrics,
+        )
+        return metrics
 
     @classmethod
     def new(

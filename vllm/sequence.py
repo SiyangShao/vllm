@@ -121,6 +121,13 @@ class RequestMetrics:
     model_forward_time: Optional[float] = None
     model_execute_time: Optional[float] = None
 
+@dataclass
+class RequestMetaMetrics:
+    request_id: str
+    prompt_len: int
+    output_len: int
+    metrics: Optional[RequestMetrics] = None
+
 
 class SequenceDataDelta(
         msgspec.Struct,

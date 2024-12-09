@@ -1,5 +1,8 @@
 import asyncio
+import aiofiles
 import time
+import os
+import json
 from typing import AsyncGenerator, AsyncIterator, Dict, List, Optional
 from typing import Sequence as GenericSequence
 from typing import Tuple, Union, cast
@@ -200,6 +203,14 @@ class OpenAIServingCompletion(OpenAIServing):
 
             final_res_batch_checked = cast(List[RequestOutput],
                                            final_res_batch)
+
+            metrics_path = os.getenv("METRICS_PATH")
+            if metrics_path is None:
+                metrics_path = os.getenv("HOME")
+            metrics_path = os.path.join(metrics_path, "metrics.txt")
+            from dataclasses import asdict
+            async with aiofiles.open(metrics_path, "a", encoding="utf-8") as file:
+                await file.write(json.dumps(asdict(final_res_batch_checked[0].get_metrics())) + "\n")
 
             response = self.request_output_to_completion_response(
                 final_res_batch_checked,
