@@ -3,7 +3,7 @@ from dataclasses import dataclass
 from typing import List, Optional, Union
 
 from vllm.lora.request import LoRARequest
-from vllm.sequence import (PromptLogprobs, RequestMetrics, SampleLogprobs,
+from vllm.sequence import (PromptLogprobs, RequestMetrics, RequestMetaMetrics, SampleLogprobs,
                            SequenceGroup, SequenceStatus)
 
 
@@ -148,6 +148,16 @@ class RequestOutput:
                    finished,
                    seq_group.metrics,
                    lora_request=seq_group.lora_request)
+    
+    def get_metrics(self) -> RequestMetaMetrics:
+        metrics = RequestMetaMetrics(
+            request_id = self.request_id,
+            prompt_len = len(self.prompt_token_ids) if self.prompt_token_ids else 0,
+            output_len = len(self.outputs[0].token_ids) if self.outputs else 0,
+            metrics = self.metrics,
+        )
+        return metrics
+
 
     def __repr__(self) -> str:
         return (f"RequestOutput(request_id={self.request_id}, "

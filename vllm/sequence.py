@@ -99,6 +99,13 @@ class RequestMetrics:
     time_in_queue: Optional[float]
     finished_time: Optional[float] = None
 
+@dataclass
+class RequestMetaMetrics:
+    request_id: str
+    prompt_len: int
+    output_len: int
+    metrics: Optional[RequestMetrics] = None
+
 
 class SequenceData:
     """Data associated with a sequence.

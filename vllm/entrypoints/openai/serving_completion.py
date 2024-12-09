@@ -1,4 +1,7 @@
+import aiofiles
 import time
+import os
+import json
 from typing import (AsyncGenerator, AsyncIterator, Callable, Dict, List,
                     Optional)
 from typing import Sequence as GenericSequence
@@ -174,6 +177,15 @@ class OpenAIServingCompletion(OpenAIServing):
         except ValueError as e:
             # TODO: Use a vllm-specific Validation Error
             return self.create_error_response(str(e))
+        
+        # create metrics
+        metrics_path = os.getenv("METRICS_PATH")
+        if metrics_path is None:
+            metrics_path = os.getenv("HOME")
+        metrics_path = os.path.join(metrics_path, "metrics.json")
+        from dataclasses import asdict
+        async with aiofiles.open(metrics_path, "a", encoding="utf-8") as file:
+            await file.write(json.dumps(asdict(final_res_batch[0].get_metrics())) + "\n")
 
         # When user requests streaming but we don't stream, we still need to
         # return a streaming response with a single event.
