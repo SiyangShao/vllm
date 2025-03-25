@@ -765,8 +765,8 @@ class LLMEngine:
                              "Priority scheduling is not enabled.")
 
         if isinstance(params, SamplingParams) \
-            and (params.guided_decoding or params.logits_processors) \
-            and self.scheduler_config.num_scheduler_steps > 1:
+                and (params.guided_decoding or params.logits_processors) \
+                and self.scheduler_config.num_scheduler_steps > 1:
             raise ValueError(
                 "Guided decoding and logits processors are not supported "
                 "in multi-step decoding")
@@ -1032,7 +1032,7 @@ class LLMEngine:
         outputs_by_sequence_group: List[List[SequenceGroupOutput]]
         if has_multiple_outputs:
             assert self.scheduler_config.is_multi_step or \
-                     self.speculative_config
+                self.speculative_config
             # Organize outputs by [step][sequence group] instead of
             # [sequence group][step].
             outputs_by_sequence_group = create_output_by_sequence_group(
@@ -1223,7 +1223,7 @@ class LLMEngine:
         required if the worker is to perform async forward pass to next step.
         """
         for seq_group_metadata, sequence_group_outputs, scheduled_seq_group in \
-            zip(seq_group_metadata_list, output, scheduled_seq_groups):
+                zip(seq_group_metadata_list, output, scheduled_seq_groups):
             seq_group = scheduled_seq_group.seq_group
 
             if seq_group.is_finished():
@@ -1617,6 +1617,7 @@ class LLMEngine:
         time_inference_requests: List[float] = []
         time_prefill_requests: List[float] = []
         time_decode_requests: List[float] = []
+        time_per_output_tokens_requests: List[float] = []
         time_in_queue_requests: List[float] = []
         model_forward_time_requests: List[float] = []
         model_execute_time_requests: List[float] = []
@@ -1725,6 +1726,10 @@ class LLMEngine:
                             seq_group.metrics.first_scheduled_time)
                         time_decode_requests.append(
                             now - seq_group.metrics.first_token_time)
+                        time_per_output_tokens_requests.append(
+                            (now - seq_group.metrics.first_token_time) / sum(seq.get_output_len()
+                                                                             for seq in seq_group.get_finished_seqs())
+                        )
                         time_inference_requests.append(
                             now - seq_group.metrics.first_scheduled_time)
                     if seq_group.metrics.time_in_queue is not None:
@@ -1804,6 +1809,7 @@ class LLMEngine:
             time_inference_requests=time_inference_requests,
             time_prefill_requests=time_prefill_requests,
             time_decode_requests=time_decode_requests,
+            time_per_output_tokens_requests=time_per_output_tokens_requests,
             time_in_queue_requests=time_in_queue_requests,
             model_forward_time_requests=model_forward_time_requests,
             model_execute_time_requests=model_execute_time_requests,

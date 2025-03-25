@@ -147,7 +147,7 @@ class Metrics:
         # Request stats
         #   Latency
         request_latency_buckets = [
-            0.3, 0.5, 0.8, 1.0, 1.5, 2.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0,
+            0.25, 0.4, 0.5, 0.8, 1.0, 1.5, 2.0, 2.5, 5.0, 10.0, 15.0, 20.0, 30.0,
             40.0, 50.0, 60.0
         ]
         self.histogram_e2e_time_request = self._histogram_cls(
@@ -179,6 +179,14 @@ class Metrics:
             "Histogram of time spent in DECODE phase for request.",
             labelnames=labelnames,
             buckets=request_latency_buckets)
+        self.histogram_time_per_output_token_request = self._histogram_cls(
+            name="vllm:request_time_per_output_token_seconds",
+            documentation="Histogram of time per output token for request.",
+            labelnames=labelnames,
+            buckets=[
+                0.01, 0.025, 0.05, 0.075, 0.1, 0.15, 0.2, 0.3, 0.4, 0.5, 0.75,
+                1.0, 2.5
+            ])
         self.histogram_time_in_queue_request = self._histogram_cls(
             name="vllm:time_in_queue_requests",
             documentation=
@@ -610,6 +618,8 @@ class PrometheusStatLogger(StatLoggerBase):
                             stats.time_prefill_requests)
         self._log_histogram(self.metrics.histogram_decode_time_request,
                             stats.time_decode_requests)
+        self._log_histogram(self.metrics.histogram_time_per_output_token_request,
+                            stats.time_per_output_tokens_requests)
         self._log_histogram(self.metrics.histogram_time_in_queue_request,
                             stats.time_in_queue_requests)
         self._log_histogram(self.metrics.histogram_model_forward_time_request,
